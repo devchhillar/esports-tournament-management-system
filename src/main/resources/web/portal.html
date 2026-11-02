@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eSports Tournament Management System — Super Admin Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0E17;
+            --bg-card: #131B2A;
+            --bg-card-hover: #1A2438;
+            --bg-secondary: #0E1524;
+            --border: #1F2C42;
+            --border-glow: rgba(0, 229, 255, 0.3);
+            --cyan: #00E5FF;
+            --purple: #9D4EDD;
+            --blue: #3B82F6;
+            --green: #10B981;
+            --red: #EF4444;
+            --gold: #F59E0B;
+            --text-primary: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        header {
+            background: linear-gradient(180deg, rgba(19, 27, 42, 0.98) 0%, rgba(10, 14, 23, 0.98) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            gap: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .logo-badge {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+            flex-shrink: 0;
+        }
+
+        .logo-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #FFFFFF, var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .admin-badge {
+            background: rgba(157, 78, 221, 0.15);
+            border: 1px solid rgba(157, 78, 221, 0.4);
+            color: var(--purple);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--green);
+        }
+        .status-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px var(--green);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 14px 18px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--cyan);
+            border-bottom-color: var(--cyan);
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 24px 32px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            min-width: 0;
+        }
+
+        /* Page Headers */
+        .page-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 0.5px;
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Toolbar / Control Cards */
+        .toolbar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .filters-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .actions-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Form Controls */
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .search-input {
+            background: #0E1524;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            min-width: 180px;
+            max-width: 280px;
+            flex: 1;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+        }
+
+        .filter-select {
+            background: #0E1524;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            min-width: 140px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .filter-select:focus {
+            border-color: var(--cyan);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00B4D8, #0077B6);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 180, 216, 0.25);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00E5FF, #0096C7);
+            box-shadow: 0 4px 14px rgba(0, 229, 255, 0.4);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #9D4EDD, #7B2CBF);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(157, 78, 221, 0.25);
+        }
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #C77DFF, #9D4EDD);
+            box-shadow: 0 4px 14px rgba(199, 125, 255, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #34D399, #10B981);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #F87171, #EF4444);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+        }
+        .btn-secondary {
+            background: #1A2438;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: #24324D;
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 22px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--cyan);
+        }
+        .kpi-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .kpi-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        /* Table Card and Responsive Tables */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13.5px;
+        }
+        th {
+            background: #0E1524;
+            color: var(--cyan);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 13px 18px;
+            border-bottom: 1px solid rgba(31, 44, 66, 0.6);
+            white-space: nowrap;
+            color: var(--text-primary);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: rgba(0, 229, 255, 0.03);
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge-inactive { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+        .badge-game { background: rgba(0, 229, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
+        .badge-status { background: rgba(157, 78, 221, 0.15); color: var(--purple); border: 1px solid rgba(157, 78, 221, 0.3); }
+
+        /* Information / Notification Banners */
+        .info-banner {
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 12.5px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        /* Cards Grid for Tournaments & Teams */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .tourney-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tourney-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 8px 24px rgba(157, 78, 221, 0.15);
+            transform: translateY(-3px);
+        }
+        .tourney-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            gap: 8px;
+        }
+        .tourney-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #FFFFFF;
+        }
+        .tourney-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+        }
+        .tourney-meta span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Match Card */
+        .match-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+        }
+        .match-card:hover {
+            border-color: var(--cyan);
+        }
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+        .match-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 0;
+        }
+        .team-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+        .team-box.right {
+            text-align: right;
+        }
+        .team-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .team-box.winner .team-name {
+            color: var(--gold);
+        }
+        .match-score-pill {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            background: #0E1524;
+            padding: 6px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            letter-spacing: 2px;
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        /* Visual Bracket */
+        .bracket-container {
+            display: flex;
+            gap: 36px;
+            overflow-x: auto;
+            padding: 24px 8px;
+        }
+        .bracket-round {
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .round-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--cyan);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .bracket-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .slot-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 4px;
+            font-size: 13px;
+        }
+        .slot-row.winner {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* Tab Content Panes */
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 20px 32px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            margin-top: auto;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1440px) {
+            main { padding: 20px 24px; }
+            .kpi-grid { gap: 12px; }
+        }
+
+        @media (max-width: 1366px) {
+            header { padding: 14px 24px; }
+            nav { padding: 0 24px; }
+            main { padding: 18px 20px; }
+            .toolbar-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .actions-wrap {
+                justify-content: flex-start;
+            }
+            .filters-wrap {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .logo-title { font-size: 20px; }
+            .logo-sub { display: none; }
+            .tab-btn { padding: 12px 14px; font-size: 14px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-input { max-width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 16px; }
+            nav { padding: 0 16px; }
+            main { padding: 16px 12px; }
+            .kpi-grid { grid-template-columns: 1fr; }
+            .filters-wrap { flex-direction: column; align-items: stretch; }
+            .filter-select { width: 100%; }
+            .actions-wrap { width: 100%; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-badge">⚔️</div>
+            <div>
+                <div class="logo-title">eSports Tournament Management System</div>
+                <div class="logo-sub">Super Admin Command Center & Web Gateway</div>
+            </div>
+        </div>
+        <div class="header-meta">
+            <div class="admin-badge">SUPER ADMIN PORTAL</div>
+            <div class="status-pill">
+                <div class="dot"></div>
+                <span>ENGINE ACTIVE (IST)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs: Dedicated Super Admin Pages First -->
+    <nav>
+        <button class="tab-btn active" onclick="switchTab('games')">🎮 Game Management</button>
+        <button class="tab-btn" onclick="switchTab('tournaments')">🏆 Tournament</button>
+        <button class="tab-btn" onclick="switchTab('matches')">⚔️ Match Operation</button>
+        <button class="tab-btn" onclick="switchTab('payments')">💳 Payment & Fees</button>
+        <button class="tab-btn" onclick="switchTab('reports')">📄 Reports & Exports</button>
+        <button class="tab-btn" onclick="switchTab('brackets')">🌲 Visual Bracket</button>
+        <button class="tab-btn" onclick="switchTab('teams')">🛡️ Teams & Rosters</button>
+        <button class="tab-btn" onclick="switchTab('leaderboard')">📊 Standings & Ranks</button>
+        <button class="tab-btn" onclick="switchTab('players')">👤 Players</button>
+        <button class="tab-btn" onclick="switchTab('desktop')">💻 Desktop App</button>
+    </nav>
+
+    <main>
+        <!-- Dynamic System Stats Bar -->
+        <div class="kpi-grid" id="statsGrid">
+            <div class="kpi-card">
+                <div class="kpi-label">Active Tournaments</div>
+                <div class="kpi-val" id="statTournaments">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Registered Squads</div>
+                <div class="kpi-val" id="statTeams" style="color: var(--purple);">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Pro Competitors</div>
+                <div class="kpi-val" id="statPlayers" style="color: var(--green);">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Scheduled Matches</div>
+                <div class="kpi-val" id="statMatches" style="color: var(--gold);">-</div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- 1. GAME MANAGEMENT SUPER ADMIN PAGE                                 -->
+        <!-- =================================================================== -->
+        <section id="games" class="tab-pane active">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Game Management</h2>
+                    <div class="page-sub">Configure competitive eSports titles, team sizes, rule categories, and operational status</div>
+                </div>
+                <span class="badge-pill badge-game" id="gameCountPill">0 TITLES LOADED</span>
+            </div>
+
+            <!-- Toolbar: Filters on Row 1, Actions on Row 2 to prevent overlapping -->
+            <div class="toolbar-card">
+                <div class="toolbar-row">
+                    <div class="filters-wrap">
+                        <span class="filter-label">Search:</span>
+                        <input type="text" id="gameSearch" class="search-input" placeholder="Search by game name or description..." oninput="filterGamesWeb()">
+                        <span class="filter-label">Category:</span>
+                        <select id="gameCatFilter" class="filter-select" onchange="filterGamesWeb()">
+                            <option value="ALL">All Categories</option>
+                            <option value="Battle Royale">Battle Royale</option>
+                            <option value="Tactical FPS">Tactical FPS</option>
+                            <option value="FPS / Battle Royale">FPS / Battle Royale</option>
+                            <option value="MOBA">MOBA</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Strategy">Strategy</option>
+                            <option value="Various">Various</option>
+                        </select>
+                        <span class="filter-label">Status:</span>
+                        <select id="gameStatusFilter" class="filter-select" onchange="filterGamesWeb()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="INACTIVE">INACTIVE</option>
+                        </select>
+                    </div>
+                    <div class="actions-wrap">
+                        <button class="btn btn-primary" onclick="alert('Open Desktop Admin Client to add new eSports titles directly into MySQL.')">➕ Add New Game</button>
+                        <button class="btn btn-secondary" onclick="loadGamesData()">🔄 Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table with Horizontal Scroll Container -->
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">ID</th>
+                                <th>Game Title</th>
+                                <th>Discipline / Category</th>
+                                <th>Min Size</th>
+                                <th>Max Size</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gamesTableBody">
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading official games...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- 2. TOURNAMENT SUPER ADMIN PAGE                                      -->
+        <!-- =================================================================== -->
+        <section id="tournaments" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Tournament Management</h2>
+                    <div class="page-sub">Championship tournaments, automated fixture generation, registrations, and formats</div>
+                </div>
+                <div class="actions-wrap">
+                    <button class="btn btn-secondary" id="btnToggleTourneyView" onclick="toggleTourneyView()">📊 Switch to Admin Table View</button>
+                </div>
+            </div>
+
+            <!-- Toolbar Card -->
+            <div class="toolbar-card">
+                <div class="toolbar-row">
+                    <div class="filters-wrap">
+                        <span class="filter-label">Search:</span>
+                        <input type="text" id="tourneySearch" class="search-input" placeholder="Search tournament title..." oninput="filterTourneysWeb()">
+                        <span class="filter-label">Game:</span>
+                        <select id="tourneyGameFilter" class="filter-select" onchange="filterTourneysWeb()">
+                            <option value="ALL">All Games</option>
+                        </select>
+                        <span class="filter-label">Status:</span>
+                        <select id="tourneyStatusFilter" class="filter-select" onchange="filterTourneysWeb()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="REGISTRATION_OPEN">REGISTRATION_OPEN</option>
+                            <option value="UPCOMING">UPCOMING</option>
+                            <option value="ONGOING">ONGOING</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="DRAFT">DRAFT</option>
+                        </select>
+                    </div>
+                    <div class="actions-wrap">
+                        <button class="btn btn-primary" onclick="alert('Use the Desktop Admin Dashboard to create new tournaments.')">➕ New Tournament</button>
+                        <button class="btn btn-success" onclick="switchTab('matches')">⚡ Generate Fixtures</button>
+                        <button class="btn btn-accent" onclick="switchTab('brackets')">📊 View Bracket</button>
+                        <button class="btn btn-secondary" onclick="loadTourneysData()">🔄 Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 1: Cards View -->
+            <div class="cards-grid" id="tournamentsCardsView">
+                <div style="color: var(--text-muted);">Loading tournaments...</div>
+            </div>
+
+            <!-- View 2: Detailed Admin Data Table (Toggleable) -->
+            <div class="table-card" id="tournamentsTableView" style="display: none;">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Championship Title</th>
+                                <th>Game Discipline</th>
+                                <th>Format</th>
+                                <th>Prize Pool</th>
+                                <th>Entry Fee</th>
+                                <th>Max Teams</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                                <th>Organizer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tournamentsTableBody">
+                            <tr><td colspan="10" style="text-align: center; color: var(--text-muted);">Loading tournament table...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- 3. MATCH OPERATION SUPER ADMIN PAGE                                 -->
+        <!-- =================================================================== -->
+        <section id="matches" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Match Operations</h2>
+                    <div class="page-sub">Match scheduling, IST conflict detection, live score tracking, winner declaration, and venues</div>
+                </div>
+                <div class="actions-wrap">
+                    <button class="btn btn-secondary" id="btnToggleMatchView" onclick="toggleMatchView()">📋 Switch to Admin Operations Table</button>
+                </div>
+            </div>
+
+            <!-- IST Time Notice -->
+            <div class="info-banner">
+                <span>🕒</span>
+                <span><strong>IST Synchronized:</strong> All competitive matches run on Indian Standard Time (Asia/Kolkata). Automated conflict detection enforces minimum 2-hour scheduling buffer between team bookings.</span>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <div class="toolbar-card">
+                <div class="toolbar-row">
+                    <div class="filters-wrap">
+                        <span class="filter-label">Tournament:</span>
+                        <select id="matchTourneyFilter" class="filter-select" onchange="filterMatchesWeb()">
+                            <option value="ALL">All Tournaments</option>
+                        </select>
+                        <span class="filter-label">Status:</span>
+                        <select id="matchStatusFilter" class="filter-select" onchange="filterMatchesWeb()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="SCHEDULED">SCHEDULED</option>
+                            <option value="LIVE">LIVE</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                        <span class="filter-label">Timeline:</span>
+                        <select id="matchTimelineFilter" class="filter-select" onchange="filterMatchesWeb()">
+                            <option value="ALL">All Dates</option>
+                            <option value="TODAY">Today's Schedule</option>
+                            <option value="WEEK">This Week's Schedule</option>
+                        </select>
+                    </div>
+                    <div class="actions-wrap">
+                        <button class="btn btn-primary" onclick="alert('Use the Desktop Admin Dashboard to schedule matches.')">➕ Schedule Match</button>
+                        <button class="btn btn-danger" onclick="alert('Select a match in the Desktop Client to mark LIVE broadcast.')">🔴 Go Live</button>
+                        <button class="btn btn-accent" onclick="alert('Open the Desktop Client to submit official scores and declare winners.')">🏆 Score & Winner</button>
+                        <button class="btn btn-secondary" onclick="loadMatchesData()">🔄 Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 1: Match Cards View -->
+            <div id="matchesCardsView">
+                <div style="color: var(--text-muted);">Loading match fixtures...</div>
+            </div>
+
+            <!-- View 2: Detailed Admin Operations Table (Toggleable) -->
+            <div class="table-card" id="matchesTableView" style="display: none;">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Tournament</th>
+                                <th>Bracket Round</th>
+                                <th>Team 1</th>
+                                <th>Team 2</th>
+                                <th>Score</th>
+                                <th>Winner</th>
+                                <th>Scheduled (IST)</th>
+                                <th>Venue / Server</th>
+                                <th>Referee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matchesTableBody">
+                            <tr><td colspan="11" style="text-align: center; color: var(--text-muted);">Loading matches...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- 4. PAYMENT AND FEES SUPER ADMIN PAGE                                -->
+        <!-- =================================================================== -->
+        <section id="payments" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Payment and Fees</h2>
+                    <div class="page-sub">Tournament entry fees, prize money disbursements, escrow reconciliation, and transaction audits</div>
+                </div>
+            </div>
+
+            <!-- Financial KPI Row -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">💰 Total Entry Fees Collected</div>
+                    <div class="kpi-val" id="payRevenue" style="color: var(--green);">₹ 0.00</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">🏆 Total Prize Money Paid</div>
+                    <div class="kpi-val" id="payPayouts" style="color: var(--red);">₹ 0.00</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">⚖️ Net Tournament Balance</div>
+                    <div class="kpi-val" id="payNet" style="color: var(--cyan);">₹ 0.00</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">📜 Total Transactions</div>
+                    <div class="kpi-val" id="payTxns" style="color: var(--gold);">0</div>
+                </div>
+            </div>
+
+            <!-- Financial Controls Toolbar -->
+            <div class="toolbar-card">
+                <div class="toolbar-row">
+                    <div class="filters-wrap">
+                        <span class="filter-label">Tournament:</span>
+                        <select id="payTourneyFilter" class="filter-select" onchange="filterPaymentsWeb()">
+                            <option value="ALL">All Tournaments</option>
+                        </select>
+                        <span class="filter-label">Type:</span>
+                        <select id="payTypeFilter" class="filter-select" onchange="filterPaymentsWeb()">
+                            <option value="ALL">All Types</option>
+                            <option value="ENTRY_FEE">ENTRY_FEE</option>
+                            <option value="PRIZE_PAYOUT">PRIZE_PAYOUT</option>
+                            <option value="REFUND">REFUND</option>
+                        </select>
+                        <span class="filter-label">Status:</span>
+                        <select id="payStatusFilter" class="filter-select" onchange="filterPaymentsWeb()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="FAILED">FAILED</option>
+                            <option value="REFUNDED">REFUNDED</option>
+                        </select>
+                    </div>
+                    <div class="actions-wrap">
+                        <button class="btn btn-primary" onclick="alert('Use the Desktop Admin Dashboard to record new entry fee payments.')">➕ Record Fee</button>
+                        <button class="btn btn-accent" onclick="alert('Use the Desktop Admin Dashboard to disburse tournament prize payouts.')">🏆 Distribute Prize</button>
+                        <button class="btn btn-secondary" onclick="loadPaymentsData()">🔄 Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Audit Ledger Table -->
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Transaction ID</th>
+                                <th>Tournament</th>
+                                <th>Team / Recipient</th>
+                                <th>User Account</th>
+                                <th>Amount (INR)</th>
+                                <th>Type</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <tr><td colspan="10" style="text-align: center; color: var(--text-muted);">Loading financial transactions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- 5. REPORTS AND EXPORTS SUPER ADMIN PAGE                             -->
+        <!-- =================================================================== -->
+        <section id="reports" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Reports and Exports</h2>
+                    <div class="page-sub">Generate official eSports audit reports, financial statements, and standings for PDF and Excel / CSV</div>
+                </div>
+                <span class="badge-pill badge-status" id="reportStatusBadge">READY TO EXPORT</span>
+            </div>
+
+            <!-- Report Configuration Toolbar -->
+            <div class="toolbar-card">
+                <div class="toolbar-row">
+                    <div class="filters-wrap">
+                        <span class="filter-label">Report Category:</span>
+                        <select id="reportTypeSel" class="filter-select" onchange="handleReportTypeChange()">
+                            <option value="tournaments">🏆 Championship Tournaments Summary</option>
+                            <option value="payments">💳 Financial & Prize Distribution Report</option>
+                            <option value="standings">📊 Official Tournament Standings</option>
+                            <option value="players">🎯 Pro Players Performance Leaderboard</option>
+                        </select>
+                        <span class="filter-label" id="reportTourneyLbl" style="display: none;">Select Tournament:</span>
+                        <select id="reportTourneySel" class="filter-select" style="display: none;" onchange="loadReportPreviewWeb()">
+                            <!-- Filled dynamically -->
+                        </select>
+                    </div>
+                    <div class="actions-wrap">
+                        <button class="btn btn-danger" onclick="triggerReportExport('pdf')">📄 Export to PDF</button>
+                        <button class="btn btn-success" onclick="triggerReportExport('csv')">📊 Export to Excel / CSV</button>
+                        <button class="btn btn-secondary" onclick="loadReportPreviewWeb()">🔄 Refresh Preview</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Data Preview Card -->
+            <div class="table-card">
+                <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: var(--cyan);" id="reportPreviewTitle">Report Preview: Championship Tournaments Summary</div>
+                    <div style="font-size: 12px; color: var(--text-muted);" id="reportRecordCount">0 records found</div>
+                </div>
+                <div class="table-wrap">
+                    <table id="reportPreviewTable">
+                        <thead id="reportPreviewHead">
+                            <!-- Populated dynamically -->
+                        </thead>
+                        <tbody id="reportPreviewBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- VISUAL BRACKET SECTION                                              -->
+        <!-- =================================================================== -->
+        <section id="brackets" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Championship Bracket Tree</h2>
+                    <div class="page-sub">Visual knockout bracket with live winner progression</div>
+                </div>
+            </div>
+            <div class="bracket-container" id="bracketTree">
+                <div style="color: var(--text-muted);">Loading elimination bracket...</div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TEAMS SECTION                                                       -->
+        <!-- =================================================================== -->
+        <section id="teams" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Registered eSports Squads</h2>
+                    <div class="page-sub">Verified teams, roster sizes, win/loss rates, and accumulated circuit points</div>
+                </div>
+            </div>
+            <div class="cards-grid" id="teamsList">
+                <div style="color: var(--text-muted);">Loading teams...</div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- STANDINGS SECTION                                                   -->
+        <!-- =================================================================== -->
+        <section id="leaderboard" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Official Tournament Standings</h2>
+                    <div class="page-sub">Group stages, round differentials, match points, and qualification ranks</div>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Squad</th>
+                                <th>Group</th>
+                                <th>Played</th>
+                                <th>Won</th>
+                                <th>Drawn</th>
+                                <th>Lost</th>
+                                <th>Round Diff</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsTableBody">
+                            <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Loading standings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PLAYERS SECTION                                                     -->
+        <!-- =================================================================== -->
+        <section id="players" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Pro Player Career Leaderboard</h2>
+                    <div class="page-sub">Individual player statistics, gamer tags, roles, and MVP honors</div>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Gamer Tag</th>
+                                <th>Full Name</th>
+                                <th>Current Squad</th>
+                                <th>Game Discipline</th>
+                                <th>Role</th>
+                                <th>Country</th>
+                                <th>RP Points</th>
+                                <th>Kills</th>
+                                <th>MVP Awards</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playersTableBody">
+                            <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Loading players...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- DESKTOP APP & CREDENTIALS SECTION                                  -->
+        <!-- =================================================================== -->
+        <section id="desktop" class="tab-pane">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Desktop Application & Architecture</h2>
+                    <div class="page-sub">Native Java 21 Swing client credentials and system execution profile</div>
+                </div>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+                <h3 style="color: var(--cyan); margin-bottom: 12px; font-family: 'Rajdhani'; font-size: 20px;">🖥️ Native Java Swing Desktop Application</h3>
+                <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+                    This system was engineered as a high-performance Java 21 Swing desktop application equipped with FlatLaf Cyber Dark theme, hardware acceleration, JFreeChart interactive analytics, and MySQL 8 atomic transactions.
+                </p>
+                <div style="background: #0E1524; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; font-family: monospace; color: var(--cyan); margin-bottom: 18px;">
+                    java -jar target/esports-tournament-system-1.0.0-jar-with-dependencies.jar
+                </div>
+                <h4 style="color: #FFFFFF; margin-bottom: 10px;">Pre-Configured Demo Accounts (Password: admin123)</h4>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Permissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span style="color: var(--red); font-weight: 700;">Super Admin</span></td>
+                                    <td>admin</td>
+                                    <td>admin123</td>
+                                    <td>Full Control (Fixtures, Matches, Teams, Leaderboards, Security Audit)</td>
+                                </tr>
+                                <tr>
+                                    <td><span style="color: var(--purple); font-weight: 700;">Team Manager</span></td>
+                                    <td>manager1</td>
+                                    <td>admin123</td>
+                                    <td>Manage Rosters, Recruit Free Agents, Upload Logos, Register Tournaments</td>
+                                </tr>
+                                <tr>
+                                    <td><span style="color: var(--cyan); font-weight: 700;">Player</span></td>
+                                    <td>phoenix</td>
+                                    <td>admin123</td>
+                                    <td>Career Stats, In-Game Role, Match History, Personal Profile</td>
+                                </tr>
+                                <tr>
+                                    <td><span style="color: var(--gold); font-weight: 700;">Guest Spectator</span></td>
+                                    <td>(No login)</td>
+                                    <td>-</td>
+                                    <td>Read-Only Dashboard, Brackets, Schedules, and Standings</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        eSports Tournament Management System &copy; 2026. Built with Java 21, Swing Desktop, FlatLaf, and MySQL 8.
+    </footer>
+
+    <!-- Client-Side Responsive Controller & Live Engine -->
+    <script>
+        // State Store
+        let globalGames = [];
+        let globalTourneys = [];
+        let globalMatches = [];
+        let globalPayments = [];
+        let tourneyViewMode = 'cards'; // 'cards' or 'table'
+        let matchViewMode = 'cards';   // 'cards' or 'table'
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            
+            // find tab button
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(b => {
+                if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabId)) {
+                    b.classList.add('active');
+                }
+            });
+
+            const pane = document.getElementById(tabId);
+            if (pane) pane.classList.add('active');
+
+            if (tabId === 'reports') {
+                loadReportPreviewWeb();
+            }
+        }
+
+        function toggleTourneyView() {
+            const cards = document.getElementById('tournamentsCardsView');
+            const table = document.getElementById('tournamentsTableView');
+            const btn = document.getElementById('btnToggleTourneyView');
+            if (tourneyViewMode === 'cards') {
+                tourneyViewMode = 'table';
+                cards.style.display = 'none';
+                table.style.display = 'block';
+                btn.innerText = '🗂️ Switch to Cards View';
+            } else {
+                tourneyViewMode = 'cards';
+                cards.style.display = 'grid';
+                table.style.display = 'none';
+                btn.innerText = '📊 Switch to Admin Table View';
+            }
+        }
+
+        function toggleMatchView() {
+            const cards = document.getElementById('matchesCardsView');
+            const table = document.getElementById('matchesTableView');
+            const btn = document.getElementById('btnToggleMatchView');
+            if (matchViewMode === 'cards') {
+                matchViewMode = 'table';
+                cards.style.display = 'none';
+                table.style.display = 'block';
+                btn.innerText = '🗂️ Switch to Cards View';
+            } else {
+                matchViewMode = 'cards';
+                cards.style.display = 'block';
+                table.style.display = 'none';
+                btn.innerText = '📋 Switch to Admin Operations Table';
+            }
+        }
+
+        // ==========================================
+        // 1. GAME MANAGEMENT
+        // ==========================================
+        async function loadGamesData() {
+            try {
+                const res = await fetch('/api/games');
+                globalGames = await res.json();
+                document.getElementById('gameCountPill').innerText = `${globalGames.length} TITLES CONFIGURED`;
+                filterGamesWeb();
+            } catch (e) {
+                console.error('Error loading games:', e);
+            }
+        }
+
+        function filterGamesWeb() {
+            const q = (document.getElementById('gameSearch').value || '').trim().toLowerCase();
+            const cat = document.getElementById('gameCatFilter').value;
+            const status = document.getElementById('gameStatusFilter').value;
+
+            const filtered = globalGames.filter(g => {
+                const matchesQ = !q || g.name.toLowerCase().includes(q) || (g.description && g.description.toLowerCase().includes(q));
+                const matchesCat = cat === 'ALL' || g.category === cat;
+                const matchesStatus = status === 'ALL' || g.status === status;
+                return matchesQ && matchesCat && matchesStatus;
+            });
+
+            const tbody = document.getElementById('gamesTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No matching games found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(g => `
+                <tr>
+                    <td style="color: var(--text-muted); font-weight: 700;">#${g.id}</td>
+                    <td style="font-weight: 700; color: #FFFFFF; font-size: 15px;">${g.name}</td>
+                    <td><span class="badge-pill badge-game">${g.category}</span></td>
+                    <td>${g.minTeamSize} Players</td>
+                    <td>${g.maxTeamSize} Players</td>
+                    <td><span class="badge-pill ${g.status === 'ACTIVE' ? 'badge-active' : 'badge-inactive'}">${g.status}</span></td>
+                    <td style="color: var(--text-muted); max-width: 320px; overflow: hidden; text-overflow: ellipsis;">${g.description || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ==========================================
+        // 2. TOURNAMENTS
+        // ==========================================
+        async function loadTourneysData() {
+            try {
+                const res = await fetch('/api/tournaments');
+                globalTourneys = await res.json();
+                
+                // Populate Game Filter
+                const gameSelect = document.getElementById('tourneyGameFilter');
+                const uniqueGames = [...new Set(globalTourneys.map(t => t.game))];
+                gameSelect.innerHTML = '<option value="ALL">All Games</option>' + uniqueGames.map(g => `<option value="${g}">${g}</option>`).join('');
+
+                // Populate Payments Tourney Filter & Report Tourney Filter
+                const payTourneySel = document.getElementById('payTourneyFilter');
+                const repTourneySel = document.getElementById('reportTourneySel');
+                const tourneyOptions = '<option value="ALL">All Tournaments</option>' + globalTourneys.map(t => `<option value="${t.id}">${t.id} - ${t.title}</option>`).join('');
+                if (payTourneySel) payTourneySel.innerHTML = tourneyOptions;
+                if (repTourneySel) repTourneySel.innerHTML = globalTourneys.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+
+                const matchTourneySel = document.getElementById('matchTourneyFilter');
+                if (matchTourneySel) matchTourneySel.innerHTML = tourneyOptions;
+
+                filterTourneysWeb();
+            } catch (e) {
+                console.error('Error loading tournaments:', e);
+            }
+        }
+
+        function filterTourneysWeb() {
+            const q = (document.getElementById('tourneySearch').value || '').trim().toLowerCase();
+            const game = document.getElementById('tourneyGameFilter').value;
+            const status = document.getElementById('tourneyStatusFilter').value;
+
+            const filtered = globalTourneys.filter(t => {
+                const matchesQ = !q || t.title.toLowerCase().includes(q);
+                const matchesG = game === 'ALL' || t.game === game;
+                const matchesS = status === 'ALL' || t.status === status;
+                return matchesQ && matchesG && matchesS;
+            });
+
+            // Render Cards View
+            const cardsContainer = document.getElementById('tournamentsCardsView');
+            if (filtered.length === 0) {
+                cardsContainer.innerHTML = '<div style="color: var(--text-muted)">No tournaments match your search.</div>';
+            } else {
+                cardsContainer.innerHTML = filtered.map(t => `
+                    <div class="tourney-card">
+                        <div class="tourney-header">
+                            <span class="badge-pill badge-game">${t.game}</span>
+                            <span class="badge-pill badge-status">${t.status}</span>
+                        </div>
+                        <div class="tourney-title">${t.title}</div>
+                        <div class="tourney-meta">
+                            <div>Format: <span>${t.format}</span></div>
+                            <div>Max Teams: <span>${t.maxTeams}</span></div>
+                            <div>Prize Pool: <span style="color: var(--gold);">₹ ${t.prizePool}</span></div>
+                            <div>Entry Fee: <span>₹ ${t.entryFee}</span></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Table View
+            const tbody = document.getElementById('tournamentsTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 24px;">No tournaments found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(t => `
+                    <tr>
+                        <td style="color: var(--text-muted); font-weight: 700;">#${t.id}</td>
+                        <td style="font-weight: 700; color: #FFFFFF;">${t.title}</td>
+                        <td><span class="badge-pill badge-game">${t.game}</span></td>
+                        <td>${t.format}</td>
+                        <td style="color: var(--gold); font-weight: 700;">₹ ${t.prizePool}</td>
+                        <td style="color: var(--cyan);">₹ ${t.entryFee}</td>
+                        <td>${t.maxTeams} Squads</td>
+                        <td><span class="badge-pill badge-status">${t.status}</span></td>
+                        <td>${t.startDate ? t.startDate.substring(0, 16) : '-'}</td>
+                        <td>${t.organizer || 'eSports Arena'}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // ==========================================
+        // 3. MATCH OPERATIONS
+        // ==========================================
+        async function loadMatchesData() {
+            try {
+                const res = await fetch('/api/matches');
+                globalMatches = await res.json();
+                filterMatchesWeb();
+                renderVisualBracket(globalMatches);
+            } catch (e) {
+                console.error('Error loading matches:', e);
+            }
+        }
+
+        function filterMatchesWeb() {
+            const tourney = document.getElementById('matchTourneyFilter').value;
+            const status = document.getElementById('matchStatusFilter').value;
+            const timeline = document.getElementById('matchTimelineFilter').value;
+
+            const filtered = globalMatches.filter(m => {
+                const matchesT = tourney === 'ALL' || String(m.tournamentId) === tourney;
+                const matchesS = status === 'ALL' || m.status === status;
+                return matchesT && matchesS;
+            });
+
+            // Render Cards View
+            const cardsContainer = document.getElementById('matchesCardsView');
+            if (filtered.length === 0) {
+                cardsContainer.innerHTML = '<div style="color: var(--text-muted)">No matches scheduled under selected filter.</div>';
+            } else {
+                cardsContainer.innerHTML = filtered.map(m => `
+                    <div class="match-card">
+                        <div class="match-header">
+                            <span>🏆 ${m.tournamentTitle} &bull; ${m.roundName}</span>
+                            <span style="color: var(--cyan);">📍 ${m.venue} | ⏱️ ${m.scheduledTime ? m.scheduledTime.substring(0, 16) : 'TBD'} (IST)</span>
+                        </div>
+                        <div class="match-teams">
+                            <div class="team-box ${m.winnerTeamId === m.team1Id && m.winnerTeamId ? 'winner' : ''}">
+                                <span style="font-size: 11px; color: var(--text-muted);">TEAM 1</span>
+                                <span class="team-name">${m.team1Name}</span>
+                            </div>
+                            <div class="match-score-pill">
+                                ${m.team1Score} - ${m.team2Score}
+                            </div>
+                            <div class="team-box right ${m.winnerTeamId === m.team2Id && m.winnerTeamId ? 'winner' : ''}">
+                                <span style="font-size: 11px; color: var(--text-muted);">TEAM 2</span>
+                                <span class="team-name">${m.team2Name}</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px;">
+                            <span>Referee: ${m.referee}</span>
+                            <span style="font-weight: 700; color: ${m.status === 'COMPLETED' ? 'var(--green)' : (m.status === 'LIVE' ? 'var(--red)' : 'var(--cyan)')};">${m.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Table View
+            const tbody = document.getElementById('matchesTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: var(--text-muted); padding: 24px;">No matches found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(m => `
+                    <tr>
+                        <td style="color: var(--text-muted); font-weight: 700;">#${m.id}</td>
+                        <td style="font-weight: 600;">${m.tournamentTitle}</td>
+                        <td>${m.roundName}</td>
+                        <td style="color: var(--cyan); font-weight: 700;">${m.team1Name}</td>
+                        <td style="color: var(--purple); font-weight: 700;">${m.team2Name}</td>
+                        <td style="font-weight: 700; font-size: 15px;">${m.status === 'COMPLETED' ? (m.team1Score + ' - ' + m.team2Score) : 'VS'}</td>
+                        <td style="color: var(--gold); font-weight: 700;">${m.winnerName || '-'}</td>
+                        <td>${m.scheduledTime ? m.scheduledTime.substring(0, 16) : '-'}</td>
+                        <td>${m.venue}</td>
+                        <td>${m.referee}</td>
+                        <td><span class="badge-pill ${m.status === 'COMPLETED' ? 'badge-active' : (m.status === 'LIVE' ? 'badge-inactive' : 'badge-game')}">${m.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function renderVisualBracket(matches) {
+            const bracketContainer = document.getElementById('bracketTree');
+            if (!matches || matches.length === 0) {
+                bracketContainer.innerHTML = '<div style="color: var(--text-muted)">No bracket data available.</div>';
+                return;
+            }
+            const roundsMap = {};
+            matches.forEach(m => {
+                const rName = m.roundName || 'Round';
+                if (!roundsMap[rName]) roundsMap[rName] = [];
+                roundsMap[rName].push(m);
+            });
+
+            bracketContainer.innerHTML = Object.entries(roundsMap).map(([roundName, roundMatches]) => `
+                <div class="bracket-round">
+                    <div class="round-title">${roundName}</div>
+                    ${roundMatches.map(m => `
+                        <div class="bracket-node">
+                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Match #${m.id}</div>
+                            <div class="slot-row ${m.winnerTeamId === m.team1Id && m.winnerTeamId ? 'winner' : ''}">
+                                <span>${m.team1Name}</span>
+                                <span>${m.team1Score}</span>
+                            </div>
+                            <div class="slot-row ${m.winnerTeamId === m.team2Id && m.winnerTeamId ? 'winner' : ''}">
+                                <span>${m.team2Name}</span>
+                                <span>${m.team2Score}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // 4. PAYMENT AND FEES
+        // ==========================================
+        async function loadPaymentsData() {
+            try {
+                const res = await fetch('/api/payments');
+                globalPayments = await res.json();
+
+                // Compute KPI Totals
+                let rev = 0;
+                let payouts = 0;
+                globalPayments.forEach(p => {
+                    const amt = parseFloat(p.amount) || 0;
+                    if (p.paymentType === 'ENTRY_FEE' && p.status === 'COMPLETED') rev += amt;
+                    if (p.paymentType === 'PRIZE_PAYOUT' && p.status === 'COMPLETED') payouts += amt;
+                });
+                const net = rev - payouts;
+
+                document.getElementById('payRevenue').innerText = `₹ ${rev.toFixed(2)}`;
+                document.getElementById('payPayouts').innerText = `₹ ${payouts.toFixed(2)}`;
+                document.getElementById('payNet').innerText = `₹ ${net.toFixed(2)}`;
+                document.getElementById('payTxns').innerText = globalPayments.length;
+
+                filterPaymentsWeb();
+            } catch (e) {
+                console.error('Error loading payments:', e);
+            }
+        }
+
+        function filterPaymentsWeb() {
+            const tourney = document.getElementById('payTourneyFilter').value;
+            const type = document.getElementById('payTypeFilter').value;
+            const status = document.getElementById('payStatusFilter').value;
+
+            const filtered = globalPayments.filter(p => {
+                const matchesT = tourney === 'ALL' || (p.tournamentTitle && p.tournamentTitle.includes(tourney));
+                const matchesType = type === 'ALL' || p.paymentType === type;
+                const matchesStatus = status === 'ALL' || p.status === status;
+                return matchesT && matchesType && matchesStatus;
+            });
+
+            const tbody = document.getElementById('paymentsTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 24px;">No financial transactions found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td style="color: var(--text-muted); font-weight: 700;">#${p.id}</td>
+                    <td style="font-family: monospace; color: var(--cyan);">${p.transactionId}</td>
+                    <td style="font-weight: 600;">${p.tournamentTitle}</td>
+                    <td>${p.teamName} <span style="color: var(--text-muted);">[${p.teamTag}]</span></td>
+                    <td>${p.userName}</td>
+                    <td style="font-weight: 700; color: ${p.paymentType === 'ENTRY_FEE' ? 'var(--green)' : 'var(--gold)'};">₹ ${p.amount}</td>
+                    <td><span class="badge-pill ${p.paymentType === 'ENTRY_FEE' ? 'badge-active' : 'badge-status'}">${p.paymentType}</span></td>
+                    <td>${p.paymentMethod}</td>
+                    <td><span class="badge-pill ${p.status === 'COMPLETED' ? 'badge-active' : 'badge-inactive'}">${p.status}</span></td>
+                    <td>${p.paymentDate ? p.paymentDate.substring(0, 16) : '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ==========================================
+        // 5. REPORTS AND EXPORTS
+        // ==========================================
+        function handleReportTypeChange() {
+            const type = document.getElementById('reportTypeSel').value;
+            const isStandings = type === 'standings';
+            document.getElementById('reportTourneyLbl').style.display = isStandings ? 'inline-block' : 'none';
+            document.getElementById('reportTourneySel').style.display = isStandings ? 'inline-block' : 'none';
+            loadReportPreviewWeb();
+        }
+
+        async function loadReportPreviewWeb() {
+            const type = document.getElementById('reportTypeSel').value;
+            const head = document.getElementById('reportPreviewHead');
+            const body = document.getElementById('reportPreviewBody');
+            const titleLbl = document.getElementById('reportPreviewTitle');
+            const countLbl = document.getElementById('reportRecordCount');
+
+            if (type === 'tournaments') {
+                titleLbl.innerText = 'Report Preview: Championship Tournaments Summary';
+                head.innerHTML = `
+                    <tr>
+                        <th>ID</th><th>Tournament Title</th><th>Game</th><th>Format</th><th>Prize Pool</th><th>Entry Fee</th><th>Max Teams</th><th>Status</th><th>Start Date</th>
+                    </tr>
+                `;
+                const res = await fetch('/api/tournaments');
+                const list = await res.json();
+                countLbl.innerText = `${list.length} tournament records`;
+                body.innerHTML = list.map(t => `
+                    <tr>
+                        <td>#${t.id}</td><td style="font-weight: 700; color: #FFF;">${t.title}</td><td>${t.game}</td><td>${t.format}</td><td style="color: var(--gold);">₹ ${t.prizePool}</td><td>₹ ${t.entryFee}</td><td>${t.maxTeams}</td><td>${t.status}</td><td>${t.startDate ? t.startDate.substring(0, 16) : '-'}</td>
+                    </tr>
+                `).join('');
+            } else if (type === 'payments') {
+                titleLbl.innerText = 'Report Preview: Financial & Prize Distribution Report';
+                head.innerHTML = `
+                    <tr>
+                        <th>ID</th><th>Transaction ID</th><th>Tournament</th><th>Recipient</th><th>Amount</th><th>Type</th><th>Method</th><th>Status</th><th>Date</th>
+                    </tr>
+                `;
+                const res = await fetch('/api/payments');
+                const list = await res.json();
+                countLbl.innerText = `${list.length} transaction records`;
+                body.innerHTML = list.map(p => `
+                    <tr>
+                        <td>#${p.id}</td><td style="font-family: monospace;">${p.transactionId}</td><td>${p.tournamentTitle}</td><td>${p.teamName}</td><td style="color: var(--cyan); font-weight: 700;">₹ ${p.amount}</td><td>${p.paymentType}</td><td>${p.paymentMethod}</td><td>${p.status}</td><td>${p.paymentDate ? p.paymentDate.substring(0, 16) : '-'}</td>
+                    </tr>
+                `).join('');
+            } else if (type === 'standings') {
+                const tourneyId = document.getElementById('reportTourneySel').value || 1;
+                titleLbl.innerText = `Report Preview: Official Tournament Standings (Tourney #${tourneyId})`;
+                head.innerHTML = `
+                    <tr>
+                        <th>Rank</th><th>Squad Name</th><th>Group</th><th>Played</th><th>Wins</th><th>Draws</th><th>Losses</th><th>Round Diff</th><th>Points</th>
+                    </tr>
+                `;
+                const res = await fetch(`/api/standings?tournamentId=${tourneyId}`);
+                const list = await res.json();
+                countLbl.innerText = `${list.length} teams ranked`;
+                body.innerHTML = list.map(s => `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--gold);">#${s.rank}</td><td style="font-weight: 700; color: #FFF;">${s.teamName} [${s.teamTag}]</td><td>${s.groupName || '-'}</td><td>${s.played}</td><td style="color: var(--green);">${s.wins}</td><td>${s.draws}</td><td style="color: var(--red);">${s.losses}</td><td>${s.scoreDiff}</td><td style="color: var(--cyan); font-weight: 700;">${s.points}</td>
+                    </tr>
+                `).join('');
+            } else if (type === 'players') {
+                titleLbl.innerText = 'Report Preview: Pro Players Career Leaderboard';
+                head.innerHTML = `
+                    <tr>
+                        <th>ID</th><th>Gamer Tag</th><th>Full Name</th><th>Current Squad</th><th>Discipline</th><th>Role</th><th>RP Points</th><th>Kills</th><th>MVPs</th>
+                    </tr>
+                `;
+                const res = await fetch('/api/players');
+                const list = await res.json();
+                countLbl.innerText = `${list.length} competitor profiles`;
+                body.innerHTML = list.map(p => `
+                    <tr>
+                        <td>#${p.id}</td><td style="color: var(--cyan); font-weight: 700;">${p.gamerTag}</td><td>${p.fullName}</td><td>${p.currentTeamName}</td><td>${p.primaryGame}</td><td>${p.role}</td><td style="color: var(--gold); font-weight: 700;">${p.rankingPoints}</td><td>${p.kills}</td><td>🎖️ ${p.mvps}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function triggerReportExport(format) {
+            const type = document.getElementById('reportTypeSel').value;
+            const tourneyId = document.getElementById('reportTourneySel').value || 1;
+            const url = `/api/reports/export?type=${type}&format=${format}&tourneyId=${tourneyId}`;
+            window.location.href = url;
+        }
+
+        // ==========================================
+        // TEAMS, STANDINGS & PLAYERS LOADER
+        // ==========================================
+        async function loadAuxiliaryData() {
+            try {
+                // Teams
+                const teamsRes = await fetch('/api/teams');
+                const teams = await teamsRes.json();
+                const teamsContainer = document.getElementById('teamsList');
+                if (teams.length === 0) {
+                    teamsContainer.innerHTML = '<div style="color: var(--text-muted)">No teams found.</div>';
+                } else {
+                    teamsContainer.innerHTML = teams.map(tm => `
+                        <div class="tourney-card">
+                            <div class="tourney-header">
+                                <span class="badge-pill badge-game">${tm.game}</span>
+                                <span style="font-weight: 700; color: var(--cyan);">${tm.teamTag ? '[' + tm.teamTag + ']' : ''}</span>
+                            </div>
+                            <div class="tourney-title">${tm.teamName}</div>
+                            <div class="tourney-meta">
+                                <div>Leader: <span>${tm.leaderName}</span></div>
+                                <div>Points: <span style="color: var(--cyan);">${tm.totalPoints}</span></div>
+                                <div>Wins: <span style="color: var(--green);">${tm.matchesWon}</span></div>
+                                <div>Losses: <span style="color: var(--red);">${tm.matchesLost}</span></div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Standings
+                const standingsRes = await fetch('/api/standings');
+                const standings = await standingsRes.json();
+                const standingsBody = document.getElementById('standingsTableBody');
+                if (standings.length === 0) {
+                    standingsBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No standings data available.</td></tr>';
+                } else {
+                    standingsBody.innerHTML = standings.map(s => {
+                        let rankPill = s.rank;
+                        if (s.rank === 1) rankPill = '🥇 1st';
+                        else if (s.rank === 2) rankPill = '🥈 2nd';
+                        else if (s.rank === 3) rankPill = '🥉 3rd';
+
+                        return `
+                            <tr>
+                                <td style="font-weight: 700; font-family: 'Rajdhani'; font-size: 16px;">${rankPill}</td>
+                                <td style="font-weight: 700; color: #FFFFFF;">${s.teamName} <span style="color: var(--text-muted); font-size: 12px;">[${s.teamTag}]</span></td>
+                                <td>${s.groupName || '-'}</td>
+                                <td>${s.played}</td>
+                                <td style="color: var(--green); font-weight: 600;">${s.wins}</td>
+                                <td>${s.draws}</td>
+                                <td style="color: var(--red);">${s.losses}</td>
+                                <td>${s.scoreDiff > 0 ? '+' + s.scoreDiff : s.scoreDiff}</td>
+                                <td style="color: var(--cyan); font-weight: 700; font-size: 16px;">${s.points}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Players
+                const playersRes = await fetch('/api/players');
+                const players = await playersRes.json();
+                const playersBody = document.getElementById('playersTableBody');
+                if (players.length === 0) {
+                    playersBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No players found.</td></tr>';
+                } else {
+                    playersBody.innerHTML = players.map(p => `
+                        <tr>
+                            <td style="font-weight: 700; color: var(--cyan);">${p.gamerTag}</td>
+                            <td>${p.fullName}</td>
+                            <td>${p.currentTeamName}</td>
+                            <td><span class="badge-pill badge-game">${p.primaryGame}</span></td>
+                            <td>${p.role}</td>
+                            <td>${p.country}</td>
+                            <td style="color: var(--gold); font-weight: 700;">${p.rankingPoints}</td>
+                            <td style="color: var(--red);">${p.kills}</td>
+                            <td>🎖️ ${p.mvps}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Stats
+                const statsRes = await fetch('/api/stats');
+                const stats = await statsRes.json();
+                document.getElementById('statTournaments').innerText = stats.totalTournaments || 0;
+                document.getElementById('statTeams').innerText = stats.totalTeams || 0;
+                document.getElementById('statPlayers').innerText = stats.totalPlayers || 0;
+                document.getElementById('statMatches').innerText = stats.totalMatches || 0;
+
+            } catch (err) {
+                console.error('Error fetching auxiliary data:', err);
+            }
+        }
+
+        // Initialize All Dashboard Data
+        function initDashboard() {
+            loadGamesData();
+            loadTourneysData();
+            loadMatchesData();
+            loadPaymentsData();
+            loadAuxiliaryData();
+            loadReportPreviewWeb();
+        }
+
+        initDashboard();
+        // Background live polling every 6 seconds for match scores
+        setInterval(() => {
+            loadMatchesData();
+            loadAuxiliaryData();
+        }, 6000);
+    </script>
+</body>
+</html>
